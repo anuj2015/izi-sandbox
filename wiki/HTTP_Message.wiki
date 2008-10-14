@@ -1,5 +1,3 @@
-#HTTP_Message
-
 == Introduction ==
 
 This package tries to implement at best the following sections of the HTTP
@@ -8,18 +6,32 @@ protocol (http://tools.ietf.org/html/rfc2616/):
   * [http://tools.ietf.org/html/rfc2616#section-5 Section 5 (Request)]
   * [http://tools.ietf.org/html/rfc2616#section-6 Section 6 (Response)]
 
-It also defines constants for:
-  * [http://tools.ietf.org/html/rfc2616#section-3.1 HTTP version],
-  * [http://tools.ietf.org/html/rfc2616#section-9 HTTP request methods],
-  * [http://tools.ietf.org/html/rfc2616#section-10 HTTP status codes].
+It defines constants for:
+  * [http://tools.ietf.org/html/rfc2616#section-3.1 Section 3.1 (HTTP version)],
+  * [http://tools.ietf.org/html/rfc2616#section-9 Section 9 (HTTP request methods)],
+  * [http://tools.ietf.org/html/rfc2616#section-10 Section 10 (HTTP status codes)].
 
-And provide a lightweight array-like container for request headers
-(HTTP_Message_Headers).
+It also provides a lightweight array-like container for request headers
+(!HTTP_Message_Headers).
+
+
+== Todo ==
+
+*!HTTP_Message_Request:*
+  * handle parameters (get/post) and files,
+  * handle cookies,
+  * handle other things that I'm not aware of right now.
+
+
+*!HTTP_Message_Response:*
+  * handle chunk / gzip / deflate / compress...,
+  * add convenience methods (isError(), isRedirect()...),
+  * handle other things that I'm not aware of right now.
 
 
 == Some examples ==
 
-*HTTP_Message_Request* example:
+*!HTTP_Message_Request* example:
 
 {{{
 <?php
@@ -43,7 +55,7 @@ echo $request;
 ?>
 }}}
 
-*HTTP_Message_Response example*
+*!HTTP_Message_Response example*
 
 {{{
 <?php
@@ -77,7 +89,7 @@ echo "Body: \n{$response->body}\n";
 ?>
 }}}
 
-*HTTP_Message_Headers* example:
+*!HTTP_Message_Headers* example:
 
 {{{
 <?php
