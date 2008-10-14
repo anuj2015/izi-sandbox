@@ -1,0 +1,109 @@
+#HTTP_Message
+
+== Introduction ==
+
+This package tries to implement at best the following sections of the HTTP
+protocol (http://tools.ietf.org/html/rfc2616/):
+  * [http://tools.ietf.org/html/rfc2616#section-4 Section 4 (HTTP Message)]
+  * [http://tools.ietf.org/html/rfc2616#section-5 Section 5 (Request)]
+  * [http://tools.ietf.org/html/rfc2616#section-6 Section 6 (Response)]
+
+It also defines constants for:
+  * [http://tools.ietf.org/html/rfc2616#section-3.1 HTTP version],
+  * [http://tools.ietf.org/html/rfc2616#section-9 HTTP request methods],
+  * [http://tools.ietf.org/html/rfc2616#section-10 HTTP status codes].
+
+And provide a lightweight array-like container for request headers
+(HTTP_Message_Headers).
+
+
+== Some examples ==
+
+*HTTP_Message_Request* example:
+
+{{{
+<?php
+
+require_once 'HTTP/Message/Request.php';
+
+$request = new HTTP_Message_Request('http://www.example.com', 'post');
+$request->headers['content-encoding'] = 'gzip,deflate,compress';
+$request->headers['user-agent']       = 'FooBar version 1.0';
+
+echo $request;
+
+// outputs:
+// POST / HTTP/1.1
+// Host: www.example.com
+// Content-Encoding: gzip,deflate,compress
+// User-Agent: FooBar version 1.0
+//
+// foo=bar&bar=baz
+
+?>
+}}}
+
+*HTTP_Message_Response example*
+
+{{{
+<?php
+
+require_once 'HTTP/Message/Response.php';
+
+$res = 'HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: length
+
+<root>
+    <foo>foo</foo>
+    <bar>bar</bar>
+    <utf8>Pace سلام שלום Hasîtî 和平</utf8>
+</root>';
+
+$response = HTTP_Message_Response::parse($res);
+
+echo "Server responded: {$response->code} {$response->reason}\n";
+echo "Body: \n{$response->body}\n";
+
+// outputs:
+// Server responded: 200 OK
+// Body: 
+// <root>
+//     <foo>foo</foo>
+//     <bar>bar</bar>
+//     <utf8>Pace سلام שלום Hasîtî 和平</utf8>
+// </root>
+
+?>
+}}}
+
+*HTTP_Message_Headers* example:
+
+{{{
+<?php
+
+require_once 'HTTP/Message/Headers.php';
+
+$headers = new HTTP_Message_Headers(array(
+    'Content-encoding' => 'gzip,deflate,compress',
+    'connection'       => 'close',
+    'User-aGENT'       => 'phpt test !',
+));
+
+foreach ($headers as $k => $v) {
+    echo "$k: $v\n";
+}
+
+// ouputs:
+// camelcase:
+// Content-Encoding: gzip,deflate,compress
+// Connection: close
+// User-Agent: phpt test !
+
+var_dump(isset($headers['coNNecTion']));
+
+// ouputs:
+// bool(true)
+
+?>
+}}}
