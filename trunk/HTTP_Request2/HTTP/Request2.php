@@ -384,7 +384,7 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
     }
 
     // }}}
-    // __tostring() {{{
+    // __toString() {{{
 
     /**
      * Returns the string representation of the request.
@@ -393,7 +393,7 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
      *
      * @return string String representation of the request
      */
-    public function __tostring()
+    public function __toString()
     {
         $str = $this->getStatusLineAndHeaders();
         if ($this->method === HTTP_Request2::METHOD_TRACE) {
@@ -445,7 +445,7 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
      */
     public function getBody()
     {
-        $body  = '';
+        $body        = '';
         $ctypeTokens = explode(';', $this->headers['content-type']);
         $ctype       = $ctypeTokens[0];
         switch ($ctype) {
@@ -560,15 +560,15 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
     /**
      * Adds a query parameter to the uri query string.
      *
-     * @param string $name        Parameter name
-     * @param mixed  $value       Parameter value (can be an an array)
-     * @param bool   $preencoded  Whether the parameter value is already 
-     *                            urlencoded or not (default: false)
+     * @param string $name       Parameter name
+     * @param mixed  $value      Parameter value (can be an an array)
+     * @param bool   $preencoded Whether the parameter value is already 
+     *                           urlencoded or not (default: false)
      *
      * @return void
      * @todo report a bug / provide a patch for Net_URL2
      */
-    public function addQueryParameter($name, $value, $encoded = false)
+    public function addQueryParameter($name, $value, $preencoded = false)
     {
         // FIXME: Net_URL2 query string management is broken and should
         // be reimplemented:
@@ -585,10 +585,10 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
     /**
      * Adds a POST parameter to the request.
      *
-     * @param string $key         Parameter name
-     * @param mixed  $value       Parameter value (can be an an array)
-     * @param bool   $preencoded  Whether the parameter value is already 
-     *                            urlencoded or not (default: false)
+     * @param string $key        Parameter name
+     * @param mixed  $value      Parameter value (can be an an array)
+     * @param bool   $preencoded Whether the parameter value is already 
+     *                           urlencoded or not (default: false)
      *
      * @return void
      * @todo implement HTTP_Request2::addPostParameter()
@@ -846,6 +846,8 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
     /**
      * Returns a multipart file header.
      *
+     * @param array $file The file info array
+     *
      * @return string
      */
     public function getMultipartFileHeader($file)
@@ -862,6 +864,8 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
 
     /**
      * Returns multipart post data item header.
+     *
+     * @param string $name Name of the post parameter
      *
      * @return string
      */
@@ -936,7 +940,7 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
             $mime = mime_content_type($fpath);
         }
         if (!$mime) {
-           $mime = 'application/octet-stream';
+            $mime = 'application/octet-stream';
         }
         return $mime;
     }

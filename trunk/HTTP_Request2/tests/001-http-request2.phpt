@@ -35,13 +35,13 @@ Host: www.example.com:80
 Date: %s
 Accept-Encoding: gzip,deflate
 Content-Length: 0
-User-Agent: PEAR HTTP_Request2/@package_version@
+User-Agent: PEAR HTTP_Request2/%s
 
 GET http://www.example.com/index.php?foo=bar&baz=foo#test HTTP/1.0
 Date: %s
 Accept-Encoding: gzip,deflate
 Content-Length: 0
-User-Agent: PEAR HTTP_Request2/@package_version@
+User-Agent: PEAR HTTP_Request2/%s
 
 POST /index.php HTTP/1.1
 Host: www.example.com:80
@@ -55,25 +55,25 @@ Host: www.example.com:80
 Date: %s
 Accept-Encoding: gzip,deflate
 Content-Length: 0
-User-Agent: PEAR HTTP_Request2/@package_version@
+User-Agent: PEAR HTTP_Request2/%s
 
 DELETE /index.php HTTP/1.1
 Host: www.example.com:80
 Date: %s
 Accept-Encoding: gzip,deflate
 Content-Length: 0
-User-Agent: PEAR HTTP_Request2/@package_version@
+User-Agent: PEAR HTTP_Request2/%s
 
 TRACE /index.php HTTP/1.1
 Host: www.example.com:80
 Date: %s
 Accept-Encoding: gzip,deflate
 Content-Length: 0
-User-Agent: PEAR HTTP_Request2/@package_version@
+User-Agent: PEAR HTTP_Request2/%s
 
 CONNECT /index.php HTTP/1.1
 Host: www.example.com:80
 Date: %s
 Accept-Encoding: gzip,deflate
 Content-Length: 0
-User-Agent: PEAR HTTP_Request2/@package_version@
+User-Agent: PEAR HTTP_Request2/%s
