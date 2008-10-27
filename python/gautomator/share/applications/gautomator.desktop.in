@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+_Name=gautomator
+_Comment=The desktop robot
+Icon=gautomator
+Exec=/usr/bin/gautomator
+Terminal=false
+Type=Application
+Categories=GTK;Applications;Utility
+StartupNotify=true
+OnlyShowIn=GNOME;
+X-Ubuntu-Gettext-Domain=gautomator

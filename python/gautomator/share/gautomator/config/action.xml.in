@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<action id="">
+    <name>A meaningful name</name>
+    <description>A small description of what your action is supposed to do.</description>
+    <icon></icon>
+    <version>0.1.0</version>
+
+    <categories>
+    	<category>System</category>
+    </categories>
+
+    <authors>
+    	<author role="lead">
+            <name>Your name</name>
+            <email>you@example.com</email>
+        </author>
+    </authors>
+
+    <parameters>
+    </parameters>
+
+    <input type="TypeFilesAndFolders">
+    </input>
+    <output type="TypeFilesAndFolders">
+    </output>
+</action>

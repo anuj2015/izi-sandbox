@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<categories>
+    <category>
+        <name>All</name>
+        <icon>folder</icon>
+        <description>All actions.</description>
+    </category>
+    <category>
+        <name>Applications</name>
+        <icon>applications-other</icon>
+        <description>Contains actions that are specific to installed applications.</description>
+    </category>
+    <category>
+        <name>Converters</name>
+        <icon>applications-other</icon>
+        <description>Contains actions that are specific to installed applications.</description>
+    </category>
+    <category>
+        <name>Files and folders</name>
+        <icon>applications-system</icon>
+        <description>Contains actions related to files and folders operations.</description>
+    </category>
+    <category>
+        <name>Graphics</name>
+        <icon>applications-graphics</icon>
+        <description>Contains actions that are specific to image and photo manipulations.</description>
+    </category>
+    <category>
+        <name>Internet</name>
+        <icon>applications-internet</icon>
+        <description>Contains network, communication and internet related actions.</description>
+    </category>
+    <category>
+        <name>Multimedia</name>
+        <icon>applications-multimedia</icon>
+        <description>Contains video and sound related actions.</description>
+    </category>
+    <category>
+        <name>Office</name>
+        <icon>applications-office</icon>
+        <description>Contains office related actions.</description>
+    </category>
+    <category>
+        <name>System</name>
+        <icon>applications-system</icon>
+        <description>Contains system and related actions.</description>
+    </category>
+    <category>
+        <name>Utilities</name>
+        <icon>applications-accessories</icon>
+        <description>Contains various utilities actions.</description>
+    </category>
+</categories>
