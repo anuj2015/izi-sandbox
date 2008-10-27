@@ -425,8 +425,7 @@ class HTTP_Request2 extends HTTP_Common_Message implements splSubject
         if ($this->headers['content-length'] == null) {
             $this->headers['content-length'] = $this->getContentLength();
         }
-        if (extension_loaded('zlib')) {
-            unset($this->headers['accept-encoding']);
+        if (extension_loaded('zlib') && !isset($this->headers['accept-encoding'])) {
             $this->headers['accept-encoding'] = array('gzip', 'deflate');
         }
         $ret .= (string) $this->getAllHeaders() . "\r\n\r\n";
