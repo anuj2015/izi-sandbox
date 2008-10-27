@@ -1,0 +1,23 @@
+gautomator builtin action ideas:
+
+graphics:
+  - image manipulation suite (ImageMagik ?)
+  - set desktop background
+  - take screenshot
+
+multimedia: 
+  - video converter suite (Mencoder ?)
+  - audio converter suite (SoX ?)
+
+network:
+  - scp, sftp and ftp file transfer,
+  - send by mail,
+  - upload to ...
+
+system:
+  - copy
+  - move
+  - delete / wipe
+  - file batch renamer
+  - ...
+

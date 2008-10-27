@@ -1,0 +1,8 @@
+[encoding: UTF-8]
+bin/gautomator
+gautomator/core/models.py
+gautomator/core/types.py
+gautomator/core/settings.py
+gautomator/ui/gtkui.py
+share/applications/gautomator.desktop.in
+share/gautomator/glade/gautomator.glade

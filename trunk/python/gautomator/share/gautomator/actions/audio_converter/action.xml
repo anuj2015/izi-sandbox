@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<action id="audio_converter">
+    <name>Audio converter</name>
+    <description>A powerful audio files converter that can handle many formats (ogg, wav, mp3, aiff...).</description>
+    <icon>applications-system</icon>
+    <version>0.1.0</version>
+
+    <categories>
+    	<category>Multimedia</category>
+    	<category>Converters</category>
+    </categories>
+
+    <authors>
+    	<author role="lead">
+            <name>David JEAN LOUIS</name>
+            <email>izimobil@gmail.com</email>
+        </author>
+    	<author role="contributor">
+            <name>John Doe</name>
+            <email>john.doe@example.com</email>
+        </author>
+    </authors>
+
+    <parameters>
+        <parameter type="directory" required="1">
+            <name>output_dir</name>
+        </parameter>
+        <parameter type="choice">
+            <name>output_format</name>
+            <default>1</default>
+            <choices>
+                <choice id="1">ogg</choice>
+                <choice id="2">mp3</choice>
+                <choice id="3">wav</choice>
+            </choices>
+        </parameter>
+    </parameters>
+
+    <input type="TypeFilesAndFolders">
+	    <mimetype>audio/ogg</mimetype>
+	    <mimetype>audio/x-aiff</mimetype>
+	    <mimetype>audio/x-mpg</mimetype>
+	    <mimetype>audio/x-wav</mimetype>
+    </input>
+
+    <output type="TypeFilesAndFolders">
+    	<mimetype>audio/ogg</mimetype>
+    	<mimetype>audio/x-aiff</mimetype>
+    	<mimetype>audio/x-mpg</mimetype>
+    	<mimetype>audio/x-wav</mimetype>
+    </output>
+</action>

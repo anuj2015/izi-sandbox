@@ -1,0 +1,145 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2007 David JL <izimobil@gmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+# $Id$
+
+"""
+gautomator main script
+"""
+
+__version__ = '$Revision$'
+__author__  = 'David JEAN LOUIS <izimobil@gmail.com>'
+
+
+# dependencies {{{
+
+import os
+import sys
+import optparse
+import logging
+
+if __file__.startswith(sys.exec_prefix):
+    devel_version = False
+else:
+    devel_version = True
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    sys.path.append(os.path.join(cur_dir, '../'))
+
+from gautomator.core import settings
+
+# }}}
+# initialize function {{{
+
+def initialize():
+    actionsdir = settings.get_user_actions_dir()
+    workflowsdir = settings.get_user_workflows_dir()
+    namedpipe = settings.get_named_pipe_filepath()
+    if not os.path.isdir(actionsdir):
+        os.makedirs(actionsdir, 0700)
+    if not os.path.isdir(workflowsdir):
+        os.makedirs(workflowsdir, 0700)
+    if os.path.exists(namedpipe):
+        os.unlink(namedpipe)
+    os.mkfifo(namedpipe, 0600)
+
+
+# }}}
+# handle_command function {{{
+
+def handle_command(cmd, args):
+    subparser = optparse.OptionParser(version="0.1.1")
+    subparser.usage += ' %s <action>' % cmd
+    (options, args) = subparser.parse_args(args)
+    if len(args) == 0:
+        subparser.error('%s command requires at least one argument' % cmd)
+    if cmd in ['install', 'update']:
+        subparser.add_option(
+            "-s", "--system-wide",
+            dest="system_wide",
+            action="store_true",
+            default=False,
+            help='%s action for all users (you must have write permission on '\
+                 '%s to do this)' % (cmd, \
+                 os.path.abspath(settings.get_builtin_actions_dir()))
+        )
+    try:
+        from gautomator.core.controllers import ActionManager
+        for arg in args:
+            getattr(ActionManager, cmd)(arg)
+        sys.exit(0)
+    except Exception, exc:
+        sys.stderr.write('Error: %s\n' % exc)
+        sys.exit(1)
+
+
+
+# }}}
+# main function {{{
+
+def main():
+    initialize()
+    parser = optparse.OptionParser(version='%prog version 0.1.0')
+    parser.allow_interspersed_args = False
+    parser.usage = '''
+  %prog [-d]
+  %prog [-d] command [options] action1 [action2 ...]
+
+Commands:
+  create       create a new action
+  install      install the given action
+  update       update the given action
+  uninstall    uninstall the given action'''
+    parser.add_option(
+        "-d", "--debug",
+        dest="debug",
+        action="store_true",
+        default=False,
+        help="Run gautomator in debug mode"
+    )
+    (options, args) = parser.parse_args()
+    if options.debug:
+        # log at the debug level
+        logging.basicConfig(level=logging.DEBUG)
+    if devel_version and options.debug:
+        logging.debug(sys.argv[0]+' is not running from an installed version')
+    if args:
+        cmd = args.pop(0)
+        if cmd in ['install', 'update', 'uninstall', 'create']:
+            handle_command(cmd, args)
+        else:
+            parser.error('Unknown command "%s"' % cmd)
+    else:
+        try:
+            from gautomator.ui.gtkui import MainWindow
+            MainWindow.init()
+            sys.exit(0)
+        except KeyboardInterrupt:
+            if options.debug:
+                logging.debug('got keyboard interrupt (^C), exiting')
+            sys.exit(1)
+
+
+# }}}
+
+if __name__ == '__main__':
+    main()
