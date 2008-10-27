@@ -79,7 +79,7 @@ class HTTP_Common_Message
      * @see HTTP_Common_Headers
      * @link http://tools.ietf.org/html/rfc2616#section-4.2
      */
-    protected $_headers = null;
+    private $_headers = null;
 
     /**
      * Body of the HTTP message.
@@ -87,7 +87,7 @@ class HTTP_Common_Message
      * @var string $body HTTP message body
      * @link http://tools.ietf.org/html/rfc2616#section-4.3
      */
-    protected $_body = null;
+    private $_body = null;
     
     // }}}
     // __get() {{{

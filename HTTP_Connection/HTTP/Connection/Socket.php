@@ -48,7 +48,7 @@ class HTTP_Connection_Socket extends HTTP_Connection
      *
      * @var resource $socket
      */
-    protected $_socket = null;
+    protected $socket = null;
 
     /**
      * The host/port the socket is currently connected to.
@@ -103,14 +103,12 @@ class HTTP_Connection_Socket extends HTTP_Connection
         }
 
         // Open socket connection
-        $this->socket = @stream_socket_client(
-            $scheme . $hostPort,
+        $this->socket = @stream_socket_client($scheme . $hostPort,
             $errno,
             $errstr,
             (int) $this->request->options['connection_timeout'],
             $flags,
-            $ctx
-        );
+            $ctx);
 
         // Handle errors
         if (!$this->socket) {
@@ -203,7 +201,10 @@ class HTTP_Connection_Socket extends HTTP_Connection
             $i++;
         }
         // parse headers
-        $headers = HTTP_Response2::parseHeaders($headerStr);
+        $headers              = HTTP_Response2::parseHeaders($headerStr);
+        $this->request->state = HTTP_Request2::STATE_RESPONSE_HEADERS;
+        $this->request->data  = $headers;
+        $this->request->notify();
         $response->headers = $headers;
 
         // response to head request does not have body
@@ -232,25 +233,24 @@ class HTTP_Connection_Socket extends HTTP_Connection
                 $chunksize = hexdec($chunksize);
                 
                 // Read chunk
-                $left_to_read = $chunksize;
-                while ($left_to_read > 0) {
-                    $line = @fread($this->socket, $left_to_read);
+                $left = $chunksize;
+                while ($left > 0) {
+                    $line   = @fread($this->socket, $left);
                     $chunk .= $line;
-                    $left_to_read -= strlen($line);
+                    $left  -= strlen($line);
                     
                     // Break if the connection ended prematurely
                     if (feof($this->socket)) {
                         break;
                     }
                 }
-
                 $chunk .= @fgets($this->socket);
-                $this->request->state = HTTP_Request2::STATE_RESPONSE_TICK;
-                $this->request->data  = $status;
-                $this->request->notify();
                 if ($this->request->options['store_response_body']) {
                     $response->body .= $chunk;
                 }
+                $this->request->state = HTTP_Request2::STATE_RESPONSE_TICK;
+                $this->request->data  = $chunk;
+                $this->request->notify();
             } while ($chunksize > 0);
                 
         } else if ($enc !== null) {
@@ -264,28 +264,28 @@ class HTTP_Connection_Socket extends HTTP_Connection
                 $amount   = $clength > 8192 ? 8192 : $clength;
                 $chunk    = @fread($this->socket, $amount);
                 $clength -= $amount;
-                $this->request->state = HTTP_Request2::STATE_RESPONSE_TICK;
-                $this->request->data  = $status;
-                $this->request->notify();
                 if ($this->request->options['store_response_body']) {
                     $response->body .= $chunk;
                 }
+                $this->request->state = HTTP_Request2::STATE_RESPONSE_TICK;
+                $this->request->data  = $chunk;
+                $this->request->notify();
                 // Break if the connection ended prematurely
                 if (feof($this->socket)) {
                     break;
                 }
             }
-        // Fallback: just read the response until EOF
-        // most servers return a content-length so this should not be a big 
-        // issue...
         } else {
-            while (($buff = @fread($this->socket, 8192)) !== false) {
-                $this->request->state = HTTP_Request2::STATE_RESPONSE_TICK;
-                $this->request->data  = $status;
-                $this->request->notify();
+            // Fallback: just read the response until EOF
+            // most servers return a content-length so this should not be a big
+            // issue...
+            while (($chunk = @fread($this->socket, 8192)) !== false) {
                 if ($this->request->options['store_response_body']) {
-                    $response->body .= $buff;
+                    $response->body .= $chunk;
                 }
+                $this->request->state = HTTP_Request2::STATE_RESPONSE_TICK;
+                $this->request->data  = $chunk;
+                $this->request->notify();
                 if (feof($this->socket)) {
                     break;
                 }
@@ -310,7 +310,7 @@ class HTTP_Connection_Socket extends HTTP_Connection
         if (is_resource($this->socket)) {
             @fclose($this->socket);
         }
-        $this->socket     = null;
+        $this->socket      = null;
         $this->currentHost = null;
     }
     
@@ -319,6 +319,8 @@ class HTTP_Connection_Socket extends HTTP_Connection
 
     /**
      * Write to the socket the given string or throws an exception.
+     *
+     * @param string $str The string to write
      *
      * @return void
      */

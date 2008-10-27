@@ -68,6 +68,8 @@ abstract class HTTP_Connection
     /**
      * Factory method that returns a singleton of the given adapter.
      *
+     * @param string $adapter The adapter name
+     *
      * @return void
      * @throws HTTP_Connection_Exception
      * @internal Uncomment the @ on include_once if you have trouble...
@@ -125,9 +127,10 @@ abstract class HTTP_Connection
         // read response and notify of the event
         // Adapters are responsible of notifying of the following events in
         // their own implementation:
+        // - HTTP_Request2::STATE_RESPONSE_STATUS
         // - HTTP_Request2::STATE_RESPONSE_HEADERS
         // - HTTP_Request2::STATE_RESPONSE_TICK
-        $response = $this->receive();
+        $response             = $this->receive();
         $this->request->state = HTTP_Request2::STATE_RESPONSE_RECEIVED;
         $this->request->notify();
  
