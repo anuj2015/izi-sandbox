@@ -70,7 +70,7 @@ class JamendoPlugin(totem.Plugin):
     Jamendo totem plugin GUI.
     """
     SEARCH_CRITERIUM = ['artist_name', 'tag_idstr']
-    AUDIO_FORMATS    = ['ogg3', 'mp31']
+    AUDIO_FORMATS    = ['ogg2', 'mp31']
     TAB_RESULTS      = 0
     TAB_POPULAR      = 1
     TAB_LATEST       = 2
@@ -173,7 +173,7 @@ class JamendoPlugin(totem.Plugin):
         """
         format = self.gconf.get_string('%s/format' % gconf_key)
         if not format:
-            format = 'ogg3'
+            format = 'ogg2'
             self.gconf.set_string('%s/format' % gconf_key, format)
         num_per_page = self.gconf.get_int('%s/num_per_page' % gconf_key)
         if not num_per_page:
