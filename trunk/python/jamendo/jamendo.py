@@ -25,19 +25,15 @@ Jamendo totem plugin (http://www.jamendo.com).
 
 TODO:
 - store thumbnails in relevant XDG directories (?)
-- store settings
 - cleanup the notebook code
 - interface with jamendo write API (not documented yet):
   favorites, comments, etc...
-- ask the totem mailing list various questions about location of files:
-    * python files should go in PYTHON_PATH/site-packages/totem
-    * glade files should go in /usr/share/totem
-    * config files ?
 """
 
 import os
 import totem
 import gettext
+import gconf
 import gobject
 import gtk
 import gtk.glade
@@ -51,11 +47,22 @@ from xml.sax.saxutils import escape
 try:
     import json
 except ImportError:
-    import simplejson as json
+    try:
+        import simplejson as json
+    except ImportError:
+        dlg = gtk.MessageDialog(
+            type=gtk.MESSAGE_ERROR,
+            buttons=gtk.BUTTONS_OK
+        )
+        dlg.set_markup(_('You need to install the python simplejson module'))
+        dlg.run()
+        dlg.destroy()
+        raise
 
 socket.setdefaulttimeout(10)
 gobject.threads_init()
 _ = gettext.gettext
+gconf_key = '/apps/totem/plugins/jamendo'
 
 
 class JamendoPlugin(totem.Plugin):
@@ -63,7 +70,7 @@ class JamendoPlugin(totem.Plugin):
     Jamendo totem plugin GUI.
     """
     SEARCH_CRITERIUM = ['artist_name', 'tag_idstr']
-    AUDIO_FORMATS    = ['ogg2', 'mp31']
+    AUDIO_FORMATS    = ['ogg3', 'mp31']
     TAB_RESULTS      = 0
     TAB_POPULAR      = 1
     TAB_LATEST       = 2
@@ -73,6 +80,8 @@ class JamendoPlugin(totem.Plugin):
         self.debug = True
         self.gstreamer_plugins_present = True
         self.totem = None
+        self.gconf = gconf.client_get_default()
+        self.init_settings()
 
         # init glade interface
         f = os.path.join(os.path.dirname(__file__), 'jamendo.glade')
@@ -131,9 +140,12 @@ class JamendoPlugin(totem.Plugin):
         """
         Plugin config dialog.
         """
-        # XXX active property set in glade file does not work
+        format = self.gconf.get_string('%s/format' % gconf_key)
+        num_per_page = self.gconf.get_int('%s/num_per_page' % gconf_key)
         combo = self.glade.get_widget('preferred_format_combo')
-        combo.set_active(self.AUDIO_FORMATS.index(JamendoService.AUDIO_FORMAT))
+        combo.set_active(self.AUDIO_FORMATS.index(format))
+        spinbutton = self.glade.get_widget('album_num_spinbutton')
+        spinbutton.set_value(num_per_page)
         return self.config_dialog
 
     def reset(self):
@@ -154,6 +166,21 @@ class JamendoPlugin(totem.Plugin):
         for tv in self.treeviews:
             tv.get_model().clear()
         self._update_buttons_state()
+
+    def init_settings(self):
+        """
+        Initialize plugin settings.
+        """
+        format = self.gconf.get_string('%s/format' % gconf_key)
+        if not format:
+            format = 'ogg3'
+            self.gconf.set_string('%s/format' % gconf_key, format)
+        num_per_page = self.gconf.get_int('%s/num_per_page' % gconf_key)
+        if not num_per_page:
+            num_per_page = 10
+            self.gconf.set_int('%s/num_per_page' % gconf_key, num_per_page)
+        JamendoService.AUDIO_FORMAT = format
+        JamendoService.NUM_PER_PAGE = num_per_page
 
     def setup_treeviews(self):
         """
@@ -296,7 +323,7 @@ class JamendoPlugin(totem.Plugin):
         # pulse progressbar
         pindex = self.treeviews.index(treeview)
         self.progressbars[pindex].set_fraction(
-            float(self.album_count[pindex]) / float(JamendoService.ALBUM_NUMBER)
+            float(self.album_count[pindex]) / float(JamendoService.NUM_PER_PAGE)
         )
 
     def on_fetch_albums_done(self, treeview, albums, save_state=True):
@@ -484,8 +511,11 @@ class JamendoPlugin(totem.Plugin):
         """
         combo = self.glade.get_widget('preferred_format_combo')
         spinbutton = self.glade.get_widget('album_num_spinbutton')
-        JamendoService.AUDIO_FORMAT = self.AUDIO_FORMATS[combo.get_active()]
-        JamendoService.ALBUM_NUMBER = int(spinbutton.get_value())
+        format = self.AUDIO_FORMATS[combo.get_active()]
+        self.gconf.set_string('%s/format' % gconf_key, format)
+        num_per_page = int(spinbutton.get_value())
+        self.gconf.set_int('%s/num_per_page' % gconf_key, num_per_page)
+        self.init_settings()
         self.config_dialog.hide()
         try:
             self.reset()
@@ -500,7 +530,7 @@ class JamendoPlugin(totem.Plugin):
         model, it = sel.get_selected()
         pindex = self.treeviews.index(self.current_treeview)
         self.previous_button.set_sensitive(self.current_page[pindex] > 1)
-        self.next_button.set_sensitive(len(model)==JamendoService.ALBUM_NUMBER)
+        self.next_button.set_sensitive(len(model)==JamendoService.NUM_PER_PAGE)
         if it is not None:
             self.album_button.set_sensitive(len(model.get_path(it)) == 1)
         else:
@@ -552,7 +582,7 @@ class JamendoService(threading.Thread):
 
     API_URL = 'http://api.jamendo.com/get2'
     AUDIO_FORMAT = 'ogg2'
-    ALBUM_NUMBER = 10
+    NUM_PER_PAGE = 10
 
     def __init__(self, params, loop_cb, done_cb, error_cb):
         self.params = params
@@ -565,7 +595,7 @@ class JamendoService(threading.Thread):
     def run(self):
         url = '%s/id+name+duration+image+genre+dates+artist_id+' \
               'artist_name+artist_url/album/json/?n=%s&imagesize=50' % \
-              (self.API_URL, self.ALBUM_NUMBER)
+              (self.API_URL, self.NUM_PER_PAGE)
         if len(self.params):
             url += '&%s' % urllib.urlencode(self.params)
         try:
