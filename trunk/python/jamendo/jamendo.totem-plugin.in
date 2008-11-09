@@ -1,0 +1,9 @@
+[Totem Plugin]
+Loader=python
+Module=jamendo
+IAge=1
+_Name=Jamendo
+_Description=A plugin that communicate with the Jamendo API 
+Authors=David JEAN LOUIS <izimobil@gmail.com>
+Copyright=Copyright © 2008 David JEAN LOUIS
+Website=http://www.gnome.org/projects/totem/
