@@ -37,6 +37,7 @@ import gconf
 import gobject
 import gtk
 import gtk.glade
+import pango
 import socket
 import threading
 import time
@@ -207,23 +208,32 @@ class JamendoPlugin(totem.Plugin):
             # build pixbuf column
             cell = gtk.CellRendererPixbuf()
             col = gtk.TreeViewColumn()
-            col.pack_start(cell, False)
+            col.pack_start(cell, True)
             col.set_attributes(cell, pixbuf=1)
             w.append_column(col)
 
             # build description column
             cell = gtk.CellRendererText()
+            cell.set_property('wrap-mode', pango.WRAP_WORD)
+            cell.set_property('wrap-width', 30)
             col = gtk.TreeViewColumn()
-            col.pack_start(cell, False)
+            col.pack_start(cell, True)
             col.set_attributes(cell, markup=2)
             col.set_expand(True)
             w.append_column(col)
+            w.connect_after(
+                'size-allocate',
+                self.on_treeview_size_allocate,
+                col,
+                cell
+            )
 
             # duration column
             cell = gtk.CellRendererText()
             cell.set_property('xalign', 1.0)
+            cell.set_property('size-points', 8)
             col = gtk.TreeViewColumn()
-            col.pack_start(cell, False)
+            col.pack_start(cell, True)
             col.set_attributes(cell, markup=3)
             col.set_alignment(1.0)
             w.append_column(col)
@@ -244,10 +254,10 @@ class JamendoPlugin(totem.Plugin):
                 album['image'] = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True,
                     8, 1, 1)
         # format title
-        title  = '<b>%s</b>\n' % self._format_str(album['name'], 25)
-        title += _('Artist: %s') % self._format_str(album['artist_name'], 25)
+        title  = '<b>%s</b>\n' % self._format_str(album['name'])
+        title += _('Artist: %s') % self._format_str(album['artist_name'])
         # format duration
-        dur = '<small>%s</small>' % self._format_duration(album['duration'])
+        dur = self._format_duration(album['duration'])
         # format tooltip
         try:
             release = time.strptime(album['dates']['release'][0:10], '%Y-%m-%d')
@@ -269,14 +279,15 @@ class JamendoPlugin(totem.Plugin):
         for i, track in enumerate(album['tracks']):
             # track title
             tt = '<small>%02d. %s</small>' % \
-                (i+1, self._format_str(track['name'], 25))
+                (i+1, self._format_str(track['name']))
             # track duration
-            td = '<small>%s</small>' % self._format_duration(track['duration'])
+            td = self._format_duration(track['duration'])
             # track tooltip
             tip = '\n'.join([
                 '<b>%s</b>' %  self._format_str(track['name']),
                 _('Album: %s') % self._format_str(album['name']),
                 _('Artist: %s') % self._format_str(album['artist_name']),
+                _('Duration: %s') % td,
             ])
             # append track
             treeview.get_model().append(parent, [track, icon, tt, td, tip])
@@ -441,6 +452,16 @@ class JamendoPlugin(totem.Plugin):
         except:
             pass
 
+    def on_treeview_size_allocate(self, tv, allocation, col, cell):
+        """
+        Hack to autowrap text of the title colum.
+        """
+        cols = (c for c in tv.get_columns() if c != col)
+        w = allocation.width - sum(c.get_width() for c in cols)
+        if cell.props.wrap_width == w or w <= 0:
+            return
+        cell.props.wrap_width = w
+
     def on_previous_button_clicked(self, *args):
         """
         Called when the user clicked the previous button.
@@ -555,12 +576,9 @@ class JamendoPlugin(totem.Plugin):
         if not st:
             return ''
         try:
-            st = escape(st.encode('utf8'))
-            if truncate and len(st) > truncate:
-                return st[0:truncate-4] + ' ...'
-            return st
+            return escape(st.encode('utf8'))
         except:
-            return st.upper()
+            return st
 
     def _format_duration(self, secs):
         """
