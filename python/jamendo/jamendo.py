@@ -618,7 +618,6 @@ class JamendoService(threading.Thread):
               (self.API_URL, self.NUM_PER_PAGE)
         if len(self.params):
             url += '&%s' % urllib.urlencode(self.params)
-            print url
         try:
             self.lock.acquire()
             albums = json.loads(self._request(url))
