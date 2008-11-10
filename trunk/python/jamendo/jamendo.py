@@ -448,9 +448,7 @@ class JamendoPlugin(totem.Plugin):
                     tv.collapse_row(path)
                 else:
                     tv.expand_row(path, False)
-                self.album_button.set_sensitive(True)
-            else:
-                self.album_button.set_sensitive(False)
+            self.album_button.set_sensitive(True)
         except:
             pass
 
@@ -506,7 +504,7 @@ class JamendoPlugin(totem.Plugin):
         Called when the user clicked on the jamendo logo.
         """
         try:
-            album_id = self._get_selection_at(0)['id']
+            album_id = self._get_selection_at(0, None, True)['id']
             webbrowser.open('%s/url/album/redirect/?id=%s' % (
                 (JamendoService.API_URL, album_id)
             ))
@@ -554,21 +552,21 @@ class JamendoPlugin(totem.Plugin):
         pindex = self.treeviews.index(self.current_treeview)
         self.previous_button.set_sensitive(self.current_page[pindex] > 1)
         self.next_button.set_sensitive(len(model)==JamendoService.NUM_PER_PAGE)
-        if it is not None:
-            self.album_button.set_sensitive(len(model.get_path(it)) == 1)
-        else:
-            self.album_button.set_sensitive(False)
+        self.album_button.set_sensitive(it is not None)
 
-    def _get_selection_at(self, at=0, sel=None):
+    def _get_selection_at(self, at=0, sel=None, root=False):
         """
         Shortcut method to retrieve the value of the selected item at the
         given column.
         """
         if sel is None:
             sel = self.current_treeview.get_selection()
-        treemodel, it = sel.get_selected()
+        model, it = sel.get_selected()
+        if root:
+            while model.iter_parent(it) is not None:
+                it = model.iter_parent(it)
         if it is not None:
-            return treemodel.get(it, at)[0]
+            return model.get(it, at)[0]
         return None
 
     def _format_str(self, st, truncate=False):
