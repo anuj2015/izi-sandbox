@@ -397,9 +397,11 @@ class JamendoPlugin(totem.Plugin):
         """
         if not self.search_entry.get_text():
             return
-        self.current_treeview = self.treeviews[self.TAB_RESULTS]
-        self.notebook.set_current_page(self.TAB_RESULTS)
-        self.on_notebook_switch_page(new_search=True)
+        if self.current_treeview != self.treeviews[self.TAB_RESULTS]:
+            self.current_treeview = self.treeviews[self.TAB_RESULTS]
+            self.notebook.set_current_page(self.TAB_RESULTS)
+        else:
+            self.on_notebook_switch_page(new_search=True)
 
     def on_notebook_switch_page(self, nb=None, tab=None, tab_num=0,
         new_search=False):
@@ -616,6 +618,7 @@ class JamendoService(threading.Thread):
               (self.API_URL, self.NUM_PER_PAGE)
         if len(self.params):
             url += '&%s' % urllib.urlencode(self.params)
+            print url
         try:
             self.lock.acquire()
             albums = json.loads(self._request(url))
