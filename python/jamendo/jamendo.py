@@ -60,7 +60,7 @@ except ImportError:
         dlg.destroy()
         raise
 
-socket.setdefaulttimeout(10)
+socket.setdefaulttimeout(30)
 gobject.threads_init()
 _ = gettext.gettext
 gconf_key = '/apps/totem/plugins/jamendo'
