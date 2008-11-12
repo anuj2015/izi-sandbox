@@ -629,7 +629,7 @@ class JamendoService(threading.Thread):
                 ))
                 gobject.idle_add(self.loop_cb[0], self.loop_cb[1], album)
             gobject.idle_add(self.done_cb[0], self.done_cb[1], albums)
-        except IOError, exc:
+        except Exception, exc:
             gobject.idle_add(self.error_cb[0], self.error_cb[1], exc)
         finally:
             self.lock.release()
