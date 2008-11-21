@@ -112,7 +112,6 @@ class JamendoPlugin(totem.Plugin):
             'on_notebook_switch_page': self.on_notebook_switch_page,
             'on_treeview_row_activated': self.on_treeview_row_activated,
             'on_treeview_row_clicked': self.on_treeview_row_clicked,
-            'on_logo_button_press_event': self.on_logo_button_press_event,
             'on_previous_button_clicked': self.on_previous_button_clicked,
             'on_next_button_clicked': self.on_next_button_clicked,
             'on_album_button_clicked': self.on_album_button_clicked,
@@ -269,6 +268,7 @@ class JamendoPlugin(totem.Plugin):
             _('Artist: %s') % self._format_str(album['artist_name']),
             _('Genre: %s') % self._format_str(album['genre']),
             _('Released on: %s') % release,
+            _('License: %s') % self._format_str(album['license'][0]),
         ])
         # append album row
         parent = treeview.get_model().append(None,
@@ -501,22 +501,13 @@ class JamendoPlugin(totem.Plugin):
 
     def on_album_button_clicked(self, *args):
         """
-        Called when the user clicked on the jamendo logo.
+        Called when the user clicked on the album button.
         """
         try:
             album_id = self._get_selection_at(0, None, True)['id']
             webbrowser.open('%s/url/album/redirect/?id=%s' % (
                 (JamendoService.API_URL, album_id)
             ))
-        except:
-            pass
-
-    def on_logo_button_press_event(self, *args):
-        """
-        Called when the jamendo link button has been clicked.
-        """
-        try:
-            webbrowser.open('http://www.jamendo.com')
         except:
             pass
 
@@ -626,6 +617,10 @@ class JamendoService(threading.Thread):
                 album['tracks'] = json.loads(self._request(
                     '%s/id+name+duration/track/json/?album_id=%s'\
                     '&order=numalbum_asc' % (self.API_URL, album['id'])
+                ))
+                album['license'] = json.loads(self._request(
+                    '%s/name/license/json/album_license/?album_id=%s'\
+                    % (self.API_URL, album['id'])
                 ))
                 gobject.idle_add(self.loop_cb[0], self.loop_cb[1], album)
             gobject.idle_add(self.done_cb[0], self.done_cb[1], albums)
