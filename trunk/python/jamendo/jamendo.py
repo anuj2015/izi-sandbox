@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2007 David JL <izimobil@gmail.com>
+# Copyright (c) 2008 David JL <izimobil@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -275,7 +275,7 @@ class JamendoPlugin(totem.Plugin):
             [album, album['image'], title, dur, tip]
         )
         # append track rows
-        icon = self.window.render_icon(gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_MENU)
+        icon = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, 1, 1)
         for i, track in enumerate(album['tracks']):
             # track title
             tt = '<small>%02d. %s</small>' % \
@@ -433,6 +433,17 @@ class JamendoPlugin(totem.Plugin):
                 (JamendoService.API_URL, prop, sel['id'],
                  JamendoService.AUDIO_FORMAT)
             self.totem.action_set_mrl_and_play(url)
+            # update play icon
+            empty = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, 1, 1)
+            icon = self.window.render_icon(gtk.STOCK_MEDIA_PLAY,
+                                           gtk.ICON_SIZE_MENU)
+            for treeview in self.treeviews:
+                model = treeview.get_model()
+                for row in model:
+                    if row.path == path:
+                        path = (path[0], 0)
+                    for subrow in row.iterchildren():
+                        subrow[1] = subrow.path == path and icon or empty
         except:
             pass
 
