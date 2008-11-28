@@ -432,7 +432,10 @@ class JamendoPlugin(totem.Plugin):
             url = '%s/stream/track/redirect/?%s=%s&streamencoding=%s' %\
                 (JamendoService.API_URL, prop, sel['id'],
                  JamendoService.AUDIO_FORMAT)
-            self.totem.action_set_mrl_and_play(url)
+            try:
+                self.totem.action_set_mrl_and_play(url)
+            except:
+                self.totem.action_remote(totem.REMOTE_COMMAND_REPLACE, url)
             # update play icon
             empty = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, 1, 1)
             icon = self.window.render_icon(gtk.STOCK_MEDIA_PLAY,
@@ -443,7 +446,10 @@ class JamendoPlugin(totem.Plugin):
                     if row.path == path:
                         path = (path[0], 0)
                     for subrow in row.iterchildren():
-                        subrow[1] = subrow.path == path and icon or empty
+                        if subrow.path == path and treeview == tv:
+                            subrow[1] = icon
+                        else:
+                            subrow[1] = empty
         except:
             pass
 
