@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.4.2" 
+         version="2.0" 
+         xmlns="http://pear.php.net/dtd/package-2.0" 
+         xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+                             http://pear.php.net/dtd/tasks-1.0.xsd
+                             http://pear.php.net/dtd/package-2.0
+                             http://pear.php.net/dtd/package-2.0.xsd">
+    <name>EDI</name>
+    <channel>pear.php.net</channel>
+    <summary>A full featured EDI (Electronic Data Interchange) library</summary>
+    <description>
+EDI is a library that manages various formats: EDIFACT, X12, EANCOM.
+You can parse EDI files, convert them to xml or build EDI files from scratch.
+    </description>
+    <lead>
+        <name>David JEAN LOUIS</name>
+        <user>izi</user>
+        <email>izimobil@gmail.com</email>
+        <active>yes</active>
+    </lead>
+    <date>2008-09-15</date>
+    <version>
+        <release>0.2.0</release>
+        <api>0.2.0</api>
+    </version>
+    <stability>
+        <release>beta</release>
+        <api>beta</api>
+    </stability>
+    <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+    <notes>Initial release.</notes>
+    <contents>
+        <dir name="/">
+            <file name="EDI.php" role="php">
+                <tasks:replace from="@package_version@" to="version" type="package-info"/>
+            </file>
+            <dir name="EDI">
+                <file name="Exception.php" role="php">
+                    <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                </file>
+                <dir name="Common">
+                    <file name="Elements.php" role="php">
+                        <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                    </file>
+                    <file name="Parser.php" role="php">
+                        <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                    </file>
+                    <file name="Utils.php" role="php">
+                        <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                    </file>
+                </dir>
+                <dir name="EDIFACT">
+                    <file name="Elements.php" role="php">
+                        <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                    </file>
+                    <file name="MappingProvider.php" role="php">
+                        <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                        <tasks:replace from="@data_dir@" to="data_dir" type="pear-config" />
+                    </file>
+                    <file name="Parser.php" role="php">
+                        <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                    </file>
+                </dir>
+            </dir>
+            <dir name="tests">
+                <file name="AllTests.php" role="test">
+                    <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                </file>
+                <file name="tests.inc.php" role="test"/>
+                <file name="EDI.phpt" role="test"/>
+                <dir name="Common">
+                    <file name="Utils_01.phpt" role="test"/>
+                    <file name="Utils_02.phpt" role="test"/>
+                    <file name="Utils_03.phpt" role="test"/>
+                    <file name="Utils_04.phpt" role="test"/>
+                    <file name="Utils_05.phpt" role="test"/>
+                </dir>
+                <dir name="EDIFACT">
+                    <file name="MappingProvider_01.phpt" role="test"/>
+                    <file name="MappingProvider_02.phpt" role="test"/>
+                    <file name="MappingProvider_03.phpt" role="test"/>
+                    <file name="MappingProvider_04.phpt" role="test"/>
+                    <file name="MappingProvider_05.phpt" role="test"/>
+                    <file name="Parser_01.phpt" role="test"/>
+                    <file name="Parser_02.phpt" role="test"/>
+                    <file name="Parser_03.phpt" role="test"/>
+                    <file name="Parser_04.phpt" role="test"/>
+                    <file name="Parser_05.phpt" role="test"/>
+                    <file name="Parser_06.phpt" role="test"/>
+                    <file name="Parser_07.phpt" role="test"/>
+                    <file name="Parser_08.phpt" role="test"/>
+                </dir>
+                <dir name="data">
+                    <dir name="EDIFACT">
+                        <file name="ex1.edi" role="test"/>
+                        <file name="ex2.edi" role="test"/>
+                        <file name="ex3.edi" role="test"/>
+                        <file name="ex4.edi" role="test"/>
+                        <file name="ex5.edi" role="test"/>
+                    </dir>
+                </dir>
+            </dir>
+            <dir name="examples">
+                <file name="example1.edi" role="doc"/>
+                <file name="example1.php" role="doc">
+                    <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                </file>
+                <file name="example2.php" role="doc">
+                    <tasks:replace from="@package_version@" to="version" type="package-info"/>
+                </file>
+            </dir>
+        </dir>
+    </contents>
+    <dependencies>
+        <required>
+            <php><min>5.1.0</min></php>
+            <pearinstaller><min>1.5.0</min></pearinstaller>
+        </required>
+    </dependencies>
+    <phprelease></phprelease>
+    <changelog></changelog>
+</package>
